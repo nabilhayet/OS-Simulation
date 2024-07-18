@@ -41,9 +41,9 @@ input = gets.chomp
 
 if(input == 'A')
   puts $cpu
-  $parent_child_process["#{$cpu}"] = []
+  $parent_child_process[$cpu] = []
 else
-  $parent_child_process["#{$cpu}"].push(@process.FindProcessId)
+  ($parent_child_process[$cpu] ||= []) << @process.findObject
 end 
 
 puts $parent_child_process
