@@ -6,20 +6,27 @@ $process_array = Array.new
 $parent_child_process = Hash.new 
 $ready_queue = Array.new 
 
-def CreateProcess
+def CreateProcess(input)
   @process =  Pid.new($pid)
+  $pid = @process.findObject
   $process_array.push(@process)
-  $parent_child_process[$cpu] = []
-  MemoryUtilization()
+  $ready_queue.push(@process.pid)
+  if($cpu == 0 && $ready_queue.length > 0)
+    $cpu = $ready_queue[0]
+    $ready_queue.shift()
+  end
+  MemoryUtilization(input)
 end 
 
-def MemoryUtilization
-  if($ready_queue.length == 0)
-    $ready_queue.push(@process.pid)
+def MemoryUtilization(input)
+  if(input == 'A')
+    $parent_child_process[@process.findObject] = []
+  elsif(input == 'fork')
+    ($parent_child_process[$cpu] ||= []) << @process.findObject
   end 
-  if($cpu == 0 && $ready_queue.length > 0)
-    $cpu = $ready_queue[-1]
-  end
+ 
+  puts $parent_child_process
+ 
 end 
 
 def ProcessStatus
@@ -28,9 +35,15 @@ def ProcessStatus
   puts "The processes waitting in ready queue to use cpu are #{$ready_queue}"
 end 
 
-def ParentChildProcess
-  ($parent_child_process[$cpu] ||= []) << @process.findObject
-  puts $parent_child_process
+def ProcessQueueAdjust
+if($cpu != 0)
+  $ready_queue.push($cpu)
+end 
+$cpu = 0
+$cpu = $ready_queue[0]
+$ready_queue.shift()
+
+
 end 
 
 def FindProcessId
@@ -48,11 +61,12 @@ input = gets.chomp
 while(input != 'Exit')
 
   if(input == 'A')
-    CreateProcess()
+    CreateProcess(input)
   elsif(input == 'Q')
-    MemoryUtilization()
+    ProcessQueueAdjust()
   elsif(input == 'fork')
-    ParentChildProcess()
+    CreateProcess(input)
+    # ParentChildProcess()
   elsif(input == 'S r')
     ProcessStatus()
   end 
