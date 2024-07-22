@@ -5,6 +5,10 @@ $cpu = 0
 $process_array = Array.new
 $parent_child_process = Hash.new 
 $ready_queue = Array.new 
+$processing_waiting_queue = Array.new
+
+puts "How many Hard Disks does the computer Have?"
+$hard_disks = gets.chomp
 
 def CreateProcess(input)
   @process =  Pid.new($pid)
@@ -42,7 +46,17 @@ end
 $cpu = 0
 $cpu = $ready_queue[0]
 $ready_queue.shift()
+end 
 
+def HardDiskRead
+
+end 
+
+def HardDiskStatus
+
+end 
+
+def HardDiskAdjust
 
 end 
 
@@ -69,6 +83,12 @@ while(input != 'Exit')
     # ParentChildProcess()
   elsif(input == 'S r')
     ProcessStatus()
+  elsif(input == 'd 0 asd.txt')
+    HardDiskRead()
+  elsif(input == 'S i')
+    HardDiskStatus()
+  elsif(input == 'D 0')
+    HardDiskAdjust()
   end 
   puts "Please enter your input"
   input = gets.chomp
