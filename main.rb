@@ -60,6 +60,14 @@ def HardDiskAdjust
 
 end 
 
+def RemoveProcess
+
+end 
+
+def WaitParentProcess
+  
+end 
+
 def FindProcessId
    puts "The Process id is #{@process.findObject}"
 end 
@@ -89,6 +97,12 @@ while(input != 'Exit')
     HardDiskStatus()
   elsif(input == 'D 0')
     HardDiskAdjust()
+  elsif(input == 'quit')
+    RemoveProcess()
+  elsif(input == 'wait')
+    WaitParentProcess()
+  else
+    puts "Please Give a valid input"
   end 
   puts "Please enter your input"
   input = gets.chomp
