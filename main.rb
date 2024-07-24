@@ -6,9 +6,10 @@ $process_array = Array.new
 $parent_child_process = Hash.new 
 $ready_queue = Array.new 
 $processing_waiting_queue = Array.new
+$hard_disk = Array.new
 
 puts "How many Hard Disks does the computer Have?"
-$hard_disks = gets.chomp
+$hard_disks_number = gets.chomp
 
 def CreateProcess(input)
   @process =  Pid.new($pid)
@@ -49,7 +50,7 @@ $ready_queue.shift()
 end 
 
 def HardDiskRead
-
+  puts "Hello World"
 end 
 
 def HardDiskStatus
@@ -65,7 +66,7 @@ def RemoveProcess
 end 
 
 def WaitParentProcess
-  
+
 end 
 
 def FindProcessId
@@ -81,7 +82,6 @@ puts "Please enter your input"
 input = gets.chomp
 
 while(input != 'Exit')
-
   if(input == 'A')
     CreateProcess(input)
   elsif(input == 'Q')
@@ -91,8 +91,22 @@ while(input != 'Exit')
     # ParentChildProcess()
   elsif(input == 'S r')
     ProcessStatus()
-  elsif(input == 'd 0 asd.txt')
-    HardDiskRead()
+  elsif(input.match(/d{1}\s\d\s\w*.txt/))
+    if($cpu <= 0)
+      puts "No Process is using CPU and Hard Disk can not be Read!"
+    else
+      $hard_disk = input.split(" ")
+      puts "Requesting to Read Hard Disk Number #{$hard_disk[1]}" 
+      # hard disk number starts from zero 
+      puts "File Read Request #{$hard_disk[2]}"
+      if($hard_disk[1] < $hard_disks_number)
+        HardDiskRead()
+      else
+        puts "The Hard Disk Number Read Request Not Valid!"
+        $hard_disk.clear()
+      end 
+    end 
+   
   elsif(input == 'S i')
     HardDiskStatus()
   elsif(input == 'D 0')
