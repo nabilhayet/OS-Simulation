@@ -6,10 +6,13 @@ $process_array = Array.new
 $parent_child_process = Hash.new 
 $ready_queue = Array.new 
 $processing_waiting_queue = Array.new
-$hard_disk = Array.new
+$hard_disk_input = Array.new
+$hard_disk = Hash.new
+
+
 
 puts "How many Hard Disks does the computer Have?"
-$hard_disks_number = gets.chomp
+$hard_disks_number = Integer(gets.chomp)
 
 def CreateProcess(input)
   @process =  Pid.new($pid)
@@ -49,8 +52,25 @@ $cpu = $ready_queue[0]
 $ready_queue.shift()
 end 
 
+# hard disk = {
+#   0: {3: 'asd.txt', 
+#       IOQueue: [{2 : 2we.txt},6,7] 
+# }
+#   1: {4: bmw.txt, 
+#   IOQueue : [5,8,9], file: hello.txt}
+# }
+#
+
 def HardDiskRead
   puts "Hello World"
+  $hard_disk_input[1] = Integer($hard_disk_input[1])
+#  hash[:foo] ||= {}
+#  hash[:foo][:bar][:baz] = "hello"
+  $hard_disk[$hard_disk_input[1]] ||= {} # {0 : {}}
+  puts $hard_disk
+  $hard_disk[$hard_disk_input[1]][$cpu] = $hard_disk_input[2]
+  puts $hard_disk
+
 end 
 
 def HardDiskStatus
@@ -95,15 +115,15 @@ while(input != 'Exit')
     if($cpu <= 0)
       puts "No Process is using CPU and Hard Disk can not be Read!"
     else
-      $hard_disk = input.split(" ")
-      puts "Requesting to Read Hard Disk Number #{$hard_disk[1]}" 
+      $hard_disk_input = input.split(" ")
+      puts "Requesting to Read Hard Disk Number #{$hard_disk_input[1]}" 
       # hard disk number starts from zero 
-      puts "File Read Request #{$hard_disk[2]}"
-      if($hard_disk[1] < $hard_disks_number)
+      puts "File Read Request #{$hard_disk_input[2]}"
+      if(Integer($hard_disk_input[1]) < $hard_disks_number)
         HardDiskRead()
       else
-        puts "The Hard Disk Number Read Request Not Valid!"
-        $hard_disk.clear()
+        puts "The Hard Disk Number You Read Request Not Valid!"
+        $hard_disk_input.clear()
       end 
     end 
    
@@ -122,8 +142,6 @@ while(input != 'Exit')
   input = gets.chomp
 end 
    
-
-
 
 
 
