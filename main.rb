@@ -53,11 +53,9 @@ $ready_queue.shift()
 end 
 
 # hard disk = {
-#   0: {3: 'asd.txt', 
-#       IOQueue: [{2 : 2we.txt},6,7] 
-# }
-#   1: {4: bmw.txt, 
-#   IOQueue : [5,8,9], file: hello.txt}
+#   0: {  process: { 3: 'asd.txt'}, 
+#         IOQueue: [2,6,7],
+#         processQueuefile: { 2: '2we.txt'}
 # }
 #
 
@@ -67,14 +65,29 @@ def HardDiskRead
 #  hash[:foo] ||= {}
 #  hash[:foo][:bar][:baz] = "hello"
   $hard_disk[$hard_disk_input[1]] ||= {} # {0 : {}}
+  $hard_disk[$hard_disk_input[1]]["process"] ||= {}
+  $hard_disk[$hard_disk_input[1]]["process"][$cpu] = $hard_disk_input[2]
+
+  $hard_disk[$hard_disk_input[1]]["IOQueue"] ||= []
+  $hard_disk[$hard_disk_input[1]]["processqueuefile"] ||= {}
+  $hard_disk[$hard_disk_input[1]]["processqueuefile"][$cpu] = $hard_disk_input[2]
   puts $hard_disk
-  $hard_disk[$hard_disk_input[1]][$cpu] = $hard_disk_input[2]
-  puts $hard_disk
+
+  $cpu = 0
+  $cpu = $ready_queue[0]
+  $ready_queue.shift()
 
 end 
 
 def HardDiskStatus
-
+  puts "The hard disk number being used now : "
+  $hard_disk.each do |hard_disk_num, hard_disk_info|
+    puts hard_disk_num
+    puts "---------------------"
+    hard_disk_info.each do |h,d|
+      puts "The #{h} is - #{d}"
+      end 
+  end 
 end 
 
 def HardDiskAdjust
