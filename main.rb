@@ -52,46 +52,34 @@ $cpu = $ready_queue[0]
 $ready_queue.shift()
 end 
 
-# hard disk = {
-#   0: {  process: { 3: 'asd.txt'}, 
-#         IOQueue: [2,6,7],
-#         processQueuefile: { 2: '2we.txt'}
-# }
-#  hash[:foo] ||= {}
-#  hash[:foo][:bar][:baz] = "hello"
-#
-
 def HardDiskRead
   puts "Hello World"
   $hard_disk_input[1] = Integer($hard_disk_input[1])
-  if($hard_disk.has_key?($hard_disk_input[1])) # That means it hhas been read already
-    if(($hard_disk[$hard_disk_input[1]]["process"]).empty?)
-      $hard_disk[$hard_disk_input[1]]["process"][$cpu] = $hard_disk_input[2]
-     
-    else
-      $hard_disk[$hard_disk_input[1]]["IOQueue"] << $cpu
-      $hard_disk[$hard_disk_input[1]]["processqueuefile"][$cpu] = $hard_disk_input[2]
-      $cpu = 0
-      $cpu = $ready_queue[0]
-      $ready_queue.shift()
-    end 
-  else
+
+  if(!$hard_disk.has_key?($hard_disk_input[1]))
     $hard_disk[$hard_disk_input[1]] = {}
     $hard_disk[$hard_disk_input[1]]["process"] = {}
     $hard_disk[$hard_disk_input[1]]["IOQueue"] = []
     $hard_disk[$hard_disk_input[1]]["processqueuefile"] = {}
   end 
 
+
+  # That means it hhas been read already
+    if(($hard_disk[$hard_disk_input[1]]["process"]).empty?)
+      $hard_disk[$hard_disk_input[1]]["process"][$cpu] = $hard_disk_input[2]
+     
+    else
+      $hard_disk[$hard_disk_input[1]]["IOQueue"] << $cpu
+      $hard_disk[$hard_disk_input[1]]["processqueuefile"][$cpu] = $hard_disk_input[2]
+    end 
+    $cpu = 0
+    $cpu = $ready_queue[0]
+    $ready_queue.shift()
+
   puts $hard_disk
  
 end 
  
- # $hard_disk[$hard_disk_input[1]] ||= {}
- # $hard_disk[$hard_disk_input[1]]["process"] ||= {}
- # $hard_disk[$hard_disk_input[1]]["IOQueue"] ||= []
- # $hard_disk[$hard_disk_input[1]]["processqueuefile"] ||= {}
- 
-
 def HardDiskStatus
   puts "The hard disk number being used now : "
   $hard_disk.each do |hard_disk_num, hard_disk_info|
@@ -156,7 +144,7 @@ while(input != 'Exit')
    
   elsif(input == 'S i')
     HardDiskStatus()
-  elsif(input == 'D 0')
+  elsif(input.match(/D{1}\s\d/))
     HardDiskAdjust()
   elsif(input == 'quit')
     RemoveProcess()
