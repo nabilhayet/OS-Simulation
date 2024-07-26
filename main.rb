@@ -8,6 +8,7 @@ $ready_queue = Array.new
 $processing_waiting_queue = Array.new
 $hard_disk_input = Array.new
 $hard_disk = Hash.new
+$disk_remove_input = Array.new 
 
 
 
@@ -28,13 +29,12 @@ end
 
 def MemoryUtilization(input)
   if(input == 'A')
-    $parent_child_process[@process.findObject] = []
+   $parent_child_process[@process.findObject] = []
   elsif(input == 'fork')
     ($parent_child_process[$cpu] ||= []) << @process.findObject
   end 
  
   puts $parent_child_process
- 
 end 
 
 def ProcessStatus
@@ -63,11 +63,9 @@ def HardDiskRead
     $hard_disk[$hard_disk_input[1]]["processqueuefile"] = {}
   end 
 
-
   # That means it hhas been read already
     if(($hard_disk[$hard_disk_input[1]]["process"]).empty?)
       $hard_disk[$hard_disk_input[1]]["process"][$cpu] = $hard_disk_input[2]
-     
     else
       $hard_disk[$hard_disk_input[1]]["IOQueue"] << $cpu
       $hard_disk[$hard_disk_input[1]]["processqueuefile"][$cpu] = $hard_disk_input[2]
@@ -77,7 +75,6 @@ def HardDiskRead
     $ready_queue.shift()
 
   puts $hard_disk
- 
 end 
  
 def HardDiskStatus
@@ -93,7 +90,32 @@ def HardDiskStatus
 end 
 
 def HardDiskAdjust
+  puts "I am inside Hard Disk Adjust"
+  puts "-----------------------------"
+  if($hard_disk[$disk_remove_input[1]]["process"].empty?)
+    puts "No Process is using #{$disk_remove_input[1]}"
+  else
+    ($hard_disk[$disk_remove_input[1]]["process"]).each do |h,k|
+      $ready_queue.push(h)
+    end 
+  end 
 
+  $hard_disk[$disk_remove_input[1]]["process"] = {}
+
+  if(($hard_disk[$disk_remove_input[1]]["IOQueue"]).length > 0)
+    a = $hard_disk[$disk_remove_input[1]]["IOQueue"][0]
+    b = $hard_disk[$disk_remove_input[1]]["processqueuefile"][a]
+
+    $hard_disk[$disk_remove_input[1]]["process"][a] = b 
+    $hard_disk[$disk_remove_input[1]]["IOQueue"].shift()
+
+    $hard_disk[$disk_remove_input[1]]["processqueuefile"].delete(a)
+  end 
+
+  if($cpu == 0)
+    $cpu = $ready_queue[0]
+    $ready_queue.shift()
+  end 
 end 
 
 def RemoveProcess
@@ -145,7 +167,14 @@ while(input != 'Exit')
   elsif(input == 'S i')
     HardDiskStatus()
   elsif(input.match(/D{1}\s\d/))
-    HardDiskAdjust()
+    $disk_remove_input = input.split(" ")
+    $disk_remove_input[1] = Integer($disk_remove_input[1])
+    if($hard_disk.has_key?($disk_remove_input[1]))
+      HardDiskAdjust()
+    else
+      puts "There is no Hard Disk being used with that number!"
+      $disk_remove_input.clear()
+    end 
   elsif(input == 'quit')
     RemoveProcess()
   elsif(input == 'wait')
