@@ -9,6 +9,7 @@ $processing_waiting_queue = Array.new
 $hard_disk_input = Array.new
 $hard_disk = Hash.new
 $disk_remove_input = Array.new 
+$wait_quit = Hash.new
 
 
 
@@ -100,7 +101,10 @@ def HardDiskAdjust
     end 
   end 
 
+  puts "The Ready queue is #{$ready_queue}"
+
   $hard_disk[$disk_remove_input[1]]["process"] = {}
+  puts $hard_disk
 
   if(($hard_disk[$disk_remove_input[1]]["IOQueue"]).length > 0)
     a = $hard_disk[$disk_remove_input[1]]["IOQueue"][0]
@@ -108,8 +112,10 @@ def HardDiskAdjust
 
     $hard_disk[$disk_remove_input[1]]["process"][a] = b 
     $hard_disk[$disk_remove_input[1]]["IOQueue"].shift()
+    puts $hard_disk
 
     $hard_disk[$disk_remove_input[1]]["processqueuefile"].delete(a)
+    puts $hard_disk
   end 
 
   if($cpu == 0)
@@ -118,8 +124,17 @@ def HardDiskAdjust
   end 
 end 
 
-def RemoveProcess
+def RemoveProcess(input)
+  $wait_quit[$cpu] = input
+  
+  if($cpu != 0)
+    $parent_child_process[$cpu].length = 0
 
+    if($parent_child_process.has_value?($cpu))
+      parent = 
+    end 
+
+  end 
 end 
 
 def WaitParentProcess
@@ -176,7 +191,7 @@ while(input != 'Exit')
       $disk_remove_input.clear()
     end 
   elsif(input == 'quit')
-    RemoveProcess()
+    RemoveProcess(input)
   elsif(input == 'wait')
     WaitParentProcess()
   else
