@@ -1,4 +1,5 @@
 require './Pid.rb'
+require 'pry'
 puts "------------------------------"
 $pid = 0
 $cpu = 0
@@ -10,6 +11,7 @@ $hard_disk_input = Array.new
 $hard_disk = Hash.new
 $disk_remove_input = Array.new 
 $wait_quit = Hash.new
+$zombie_process = Array.new
 
 
 
@@ -125,20 +127,38 @@ def HardDiskAdjust
 end 
 
 def RemoveProcess(input)
+  puts "-----------------------"
+  puts "I am inside Remove Process"
   $wait_quit[$cpu] = input
-  
+  puts $parent_child_process[$cpu]
+
+  # {1=>[3], 2=>[4], 3=>[5]}
+
   if($cpu != 0)
-    $parent_child_process[$cpu].length = 0
+    $parent_child_process.each do |parent,child| 
+      if(parent == $cpu)
+        $parent_child_process[parent].clear()
+        $parent_child_process.delete($cpu)
+      end 
 
-    if($parent_child_process.has_value?($cpu))
-      parent = 
-    end 
-
+      if(child.include?($cpu)) 
+        if($wait_quit[parent] == 'wait')
+          $parent_child_process[parent].delete($cpu)
+       else
+          $parent_child_process[parent].delete($cpu)
+          $zombie_process.push($cpu)
+       end  
+      end 
+    end
   end 
+  puts $parent_child_process
+  puts $wait_quit
 end 
 
-def WaitParentProcess
-
+def WaitParentProcess(input)
+  puts "--------------------"
+  puts "I am inside Parent Wait Process"
+  $wait_quit[$cpu] = input 
 end 
 
 def FindProcessId
@@ -193,7 +213,7 @@ while(input != 'Exit')
   elsif(input == 'quit')
     RemoveProcess(input)
   elsif(input == 'wait')
-    WaitParentProcess()
+    WaitParentProcess(input)
   else
     puts "Please Give a valid input"
   end 
