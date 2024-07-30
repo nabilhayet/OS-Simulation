@@ -31,6 +31,8 @@ while(input != 'Exit')
    
   elsif(input == 'S i')
     HardDiskStatus()
+  elsif(input == 'S e')
+    ShowInfo()
   elsif(input.match(/D{1}\s\d/))
     $disk_remove_input = input.split(" ")
     $disk_remove_input[1] = Integer($disk_remove_input[1])

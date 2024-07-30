@@ -12,8 +12,7 @@ $hard_disk = Hash.new
 $disk_remove_input = Array.new 
 $wait_quit = Hash.new
 $zombie_process = Hash.new
-
-
+$waiting_state_parent_zombie_process = Array.new 
 
 puts "How many Hard Disks does the computer Have?"
 $hard_disks_number = Integer(gets.chomp)
@@ -132,21 +131,27 @@ def RemoveProcess(input)
   $wait_quit[$cpu] = input
   puts $parent_child_process[$cpu]
 
-  # {1=>[3], 2=>[4], 3=>[5]}
+  # {1=>[3], 2=>[], 3=>[4]}
 
   if($cpu != 0)
     $parent_child_process.each do |parent,child| 
       if(parent == $cpu)
         $parent_child_process[parent].clear()
-        $parent_child_process.delete($cpu)
       end 
 
       if(child.include?($cpu)) 
         if($wait_quit[parent] == 'wait')
           $parent_child_process[parent].delete($cpu)
-       else
-          $parent_child_process[parent].delete($cpu)
-          $zombie_process[parent] = $cpu 
+          $wait_quit.delete($cpu)
+          $ready_queue.push(parent)
+          $waiting_state_parent_zombie_process.delete(parent)
+          if($cpu == 0)
+            $cpu = $ready_queue[0]
+            $ready_queue.shift()
+          end 
+        else
+          $zombie_process[parent] = []
+          $zombie_process[parent] << $cpu 
        end  
       end 
     end
@@ -154,6 +159,7 @@ def RemoveProcess(input)
 
   $cpu = $ready_queue[0]
   $ready_queue.shift()
+
   puts $parent_child_process
   puts $zombie_process
   puts $wait_quit
@@ -163,6 +169,29 @@ def WaitParentProcess(input)
   puts "--------------------"
   puts "I am inside Parent Wait Process"
   $wait_quit[$cpu] = input 
+
+# { 3 -> 4 }
+
+  if($zombie_process.has_key?($cpu))
+    $parent_child_process[$cpu].delete($zombie_process[$cpu])
+    $zombie_process.delete($cpu)
+    $wait_quit.delete($cpu)
+  else
+    $waiting_state_parent_zombie_process.push($cpu)
+    $cpu = $ready_queue[0]
+    $ready_queue.shift()
+  end 
+end 
+
+def ShowInfo
+  puts "The Process using CPU IS : #{$cpu}"
+  puts "The processes are #{$process_array}"
+  puts "The parent child processes are #{$parent_child_process}"
+  puts "The processes waiting in ready queue to use CPU are #{$ready_queue}"
+  puts "The processes waiting to wait hard disk #{$processing_waiting_queue}"
+  puts "The Hard disk structure is #{$hard_disk}"
+  puts "The processes waiting to quit are #{$wait_quit}"
+  puts "Thhe Zombie processes are #{$zombie_process}"
 end 
 
 def FindProcessId
