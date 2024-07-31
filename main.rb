@@ -131,54 +131,51 @@ def RemoveProcess(input)
   puts "-----------------------"
   puts "I am inside Remove Process"
   $wait_quit[$cpu] = input
- # puts $parent_child_process[$cpu]
 
-  # {1=>[3], 2=>[], 3=>[4]}
-
+  # IF a process asks 'quit' but it has children in hard disk I/O Delete them also here 
   if($cpu != 0)
     $parent_child_process.each do |parent,child| 
-
-      # IF a process asks 'quit' but it has children in hard disk I/O Delete them also here 
-
       if(parent == $cpu)
-        $ready_queue.delete($parent_child_process[parent])
+        $ready_queue.delete_if {|item| $parent_child_process[$cpu].include?(item) }
+       # $ready_queue.delete($parent_child_process[$cpu])
         $parent_child_process[parent].clear()
       end 
+    end 
+  end 
 
-      # $wait_quit[parent] == 'wait'
-
-      if(child.include?($cpu)) 
-        if($waiting_state_parent_zombie_process.include?(parent))
-            $parent_child_process[parent].delete($cpu)
+  if($cpu != 0)
+    $parent_child_process.each do |p,c| 
+      if(c.include?($cpu)) 
+        if($waiting_state_parent_zombie_process.include?(p))
+            $parent_child_process.delete($cpu)
+            $parent_child_process[p].delete($cpu)
             $wait_quit.delete($cpu)
             $ready_queue.delete($cpu)
-            $ready_queue.push(parent)
-            $waiting_state_parent_zombie_process.delete(parent)
-            $zombie_process[parent].delete($cpu)
-          if($cpu == 0)
-            $cpu = $ready_queue[0]
-            $ready_queue.shift()
-          end 
+            $ready_queue.push(p)
+            $waiting_state_parent_zombie_process.delete(p)
+            $zombie_process[p].delete($cpu)
+            $cpu = 0
         else
-          ($zombie_process[parent] ||= []) << $cpu
-            $cpu = $ready_queue[0]
-            $ready_queue.shift()
-       end  
+          ($zombie_process[p] ||= []) << $cpu
+           $cpu = 0
+        end 
+      else
+        $parent_child_process.delete($cpu)
+        $ready_queue.delete($cpu)
+        $wait_quit.delete($cpu)
+        $cpu = 0
       end 
-    end
+    end 
   end 
 
-  if($cpu == 0)
+  if($ready_queue.length > 0 && $cpu == 0)
     $cpu = $ready_queue[0]
     $ready_queue.shift()
-  end 
-
+  end  
   puts "The parent child processes are #{$parent_child_process}" 
   puts "The Zombie process relationship #{$zombie_process}" 
   puts "The Processes waiting to quit & wait are #{$wait_quit}"
 end 
-
-# $zombie_process = {1 : [2,5,7], 3: {5,8,9}}
 
 def WaitParentProcess(input)
   puts "--------------------"
@@ -189,23 +186,26 @@ def WaitParentProcess(input)
     puts "No need to wait, the process can continue as it has no child"
   else 
     if($zombie_process.has_key?($cpu) && $zombie_process[$cpu].length > 0)
+      $wait_quit.delete($cpu)
+      $wait_quit.delete($zombie_process[$cpu][0])
       $parent_child_process.delete($zombie_process[$cpu][0])
       $parent_child_process[$cpu].delete($zombie_process[$cpu][0])
-      $zombie_process[$cpu].drop(1)
-      $wait_quit.delete($cpu)
+      $zombie_process[$cpu].shift()
+      $zombie_process.each do |key,value|
+        if(value.length == 0)
+          $zombie_process.delete(key)
+        end 
+      end 
     else
       $waiting_state_parent_zombie_process.push($cpu)
-      if($cpu == 0)
-        $cpu = $ready_queue[0]
-        $ready_queue.shift()
-      end 
-     
     end 
   end 
+
+  if($ready_queue.length > 0 && $cpu == 0)
+    $cpu = $ready_queue[0]
+    $ready_queue.shift()
+  end  
 end 
-
-# { 3 -> [4,6,7] }
-
 
 def ShowInfo
   puts "The Process using CPU IS : #{$cpu}"
