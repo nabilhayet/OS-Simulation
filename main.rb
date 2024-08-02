@@ -36,6 +36,7 @@ def MemoryUtilization(input)
   elsif(input == 'fork')
     ($parent_child_process[$cpu] ||= []) << @process.findObject
   end 
+  puts $parent_child_process
 end 
 
 def ProcessStatus
@@ -54,6 +55,8 @@ def ProcessQueueAdjust
     $cpu = $ready_queue[0]
     $ready_queue.shift()
   end 
+  puts "The process using CPU is #{$cpu}"
+  puts "The Ready Queue looks like: #{$ready_queue}"
 end 
 
 def HardDiskRead
@@ -127,15 +130,6 @@ def HardDiskAdjust
   end 
 end 
 
-# $zombie_process = {1 : [2,5,7], 3: {5,8,9}}
-# {1=>[2], 2=>[3], 4=>[5]}
-# If '2' says wait, then what happens? '2' has no zombie child so '2' has to wait', when 3 says quit, 
-# '3' s parent which is '2' has already called 'wait' that means parent is willing child to terminate
-# what happens now?
-
-#            Process has child or not     Processs has parent or not 
-#       YES       ||      No                  YES    ||     NO 
-
 def RemoveProcess(input)
   puts "-----------------------"
   puts "I am inside Remove Process"
@@ -167,10 +161,10 @@ def RemoveProcess(input)
       $parent_child_process.delete($cpu)
       $parent_child_process[parent_process].delete($cpu)
       $wait_quit.delete($cpu)
-      $ready_queue.delete($cpu)
+      $wait_quit.delete(parent_process)
       $ready_queue.push(parent_process)
       $waiting_state_parent_zombie_process.delete(parent_process)
-      $zombie_process[parent_process].delete($cpu)
+    #  $zombie_process[parent_process].delete($cpu)
       $cpu = 0
     else
       ($zombie_process[parent_process] ||= []) << $cpu
