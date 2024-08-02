@@ -13,6 +13,7 @@ $disk_remove_input = Array.new
 $wait_quit = Hash.new
 $zombie_process = Hash.new
 $waiting_state_parent_zombie_process = Array.new
+$process_has_parent = false 
 
 puts "How many Hard Disks does the computer Have?"
 $hard_disks_number = Integer(gets.chomp)
@@ -35,23 +36,24 @@ def MemoryUtilization(input)
   elsif(input == 'fork')
     ($parent_child_process[$cpu] ||= []) << @process.findObject
   end 
- 
-  puts $parent_child_process
 end 
 
 def ProcessStatus
   puts "----------------------"
+  puts "The parent child process #{$parent_child_process}"
   puts "The process using the cpu #{$cpu}"
   puts "The processes waitting in ready queue to use cpu are #{$ready_queue}"
 end 
 
 def ProcessQueueAdjust
-if($cpu != 0)
-  $ready_queue.push($cpu)
-end 
-$cpu = 0
-$cpu = $ready_queue[0]
-$ready_queue.shift()
+  if($cpu != 0)
+    $ready_queue.push($cpu)
+    $cpu = 0
+  end 
+  if($cpu == 0)
+    $cpu = $ready_queue[0]
+    $ready_queue.shift()
+  end 
 end 
 
 def HardDiskRead
@@ -126,46 +128,59 @@ def HardDiskAdjust
 end 
 
 # $zombie_process = {1 : [2,5,7], 3: {5,8,9}}
+# {1=>[2], 2=>[3], 4=>[5]}
+# If '2' says wait, then what happens? '2' has no zombie child so '2' has to wait', when 3 says quit, 
+# '3' s parent which is '2' has already called 'wait' that means parent is willing child to terminate
+# what happens now?
+
+#            Process has child or not     Processs has parent or not 
+#       YES       ||      No                  YES    ||     NO 
 
 def RemoveProcess(input)
   puts "-----------------------"
   puts "I am inside Remove Process"
   $wait_quit[$cpu] = input
+  parent_process = nil 
 
   # IF a process asks 'quit' but it has children in hard disk I/O Delete them also here 
   if($cpu != 0)
     $parent_child_process.each do |parent,child| 
       if(parent == $cpu)
         $ready_queue.delete_if {|item| $parent_child_process[$cpu].include?(item) }
-       # $ready_queue.delete($parent_child_process[$cpu])
         $parent_child_process[parent].clear()
       end 
     end 
   end 
 
   if($cpu != 0)
-    $parent_child_process.each do |p,c| 
-      if(c.include?($cpu)) 
-        if($waiting_state_parent_zombie_process.include?(p))
-            $parent_child_process.delete($cpu)
-            $parent_child_process[p].delete($cpu)
-            $wait_quit.delete($cpu)
-            $ready_queue.delete($cpu)
-            $ready_queue.push(p)
-            $waiting_state_parent_zombie_process.delete(p)
-            $zombie_process[p].delete($cpu)
-            $cpu = 0
-        else
-          ($zombie_process[p] ||= []) << $cpu
-           $cpu = 0
-        end 
-      else
-        $parent_child_process.delete($cpu)
-        $ready_queue.delete($cpu)
-        $wait_quit.delete($cpu)
-        $cpu = 0
+    $parent_child_process.each do |parent,child| 
+      if($parent_child_process[parent].include?($cpu))
+        $process_has_parent = true 
+        parent_process = parent
+        break
       end 
     end 
+  end 
+
+  if($process_has_parent)
+    if($wait_quit[parent_process] == 'wait')
+      $parent_child_process.delete($cpu)
+      $parent_child_process[parent_process].delete($cpu)
+      $wait_quit.delete($cpu)
+      $ready_queue.delete($cpu)
+      $ready_queue.push(parent_process)
+      $waiting_state_parent_zombie_process.delete(parent_process)
+      $zombie_process[parent_process].delete($cpu)
+      $cpu = 0
+    else
+      ($zombie_process[parent_process] ||= []) << $cpu
+      $cpu = 0
+    end 
+  else
+    $parent_child_process.delete($cpu)
+    $ready_queue.delete($cpu)
+    $wait_quit.delete($cpu)
+    $cpu = 0
   end 
 
   if($ready_queue.length > 0 && $cpu == 0)
@@ -197,6 +212,7 @@ def WaitParentProcess(input)
         end 
       end 
     else
+      $cpu = 0
       $waiting_state_parent_zombie_process.push($cpu)
     end 
   end 
