@@ -1,12 +1,12 @@
 require './Pid.rb'
-require 'pry'
+require "pry"
 puts "------------------------------"
 $pid = 0
 $cpu = 0
 $process_array = Array.new
 $parent_child_process = Hash.new 
 $ready_queue = Array.new 
-$processing_waiting_queue = Array.new
+# $processing_waiting_queue = Array.new
 $hard_disk_input = Array.new
 $hard_disk = Hash.new
 $disk_remove_input = Array.new 
@@ -141,6 +141,7 @@ def RemoveProcess(input)
     $parent_child_process.each do |parent,child| 
       if(parent == $cpu)
         $ready_queue.delete_if {|item| $parent_child_process[$cpu].include?(item) }
+        RemoveProcessFromHardDisk(parent)
         $parent_child_process[parent].clear()
       end 
     end 
@@ -217,12 +218,40 @@ def WaitParentProcess(input)
   end  
 end 
 
+def RemoveProcessFromHardDisk(input)
+  puts "I am inside Hard disk Remove Processs"
+  $hard_disk.each do |key,value|
+    value.each do |name, process|
+      
+      if(name == 'IOQueue' && $hard_disk[key][name].any?{ |i|  $parent_child_process[input].include?(i)})
+          $hard_disk[key][name].delete_if {|item| $parent_child_process[input].include?(item)}
+          $hard_disk[key]["processqueuefile"].delete_if {|item| $parent_child_process[input].include?(item)}
+      end 
+      if(name == 'process' && ($parent_child_process[input]).include?($hard_disk[key][name].keys.first))
+        $hard_disk[key][name].clear()
+      end 
+    end 
+  end 
+
+  $hard_disk.each do |number,disks|
+    if($hard_disk[number]["process"].empty?)
+      if($hard_disk[number]["IOQueue"].length > 0)
+        a = $hard_disk[number]["IOQueue"][0]
+        b = $hard_disk[number]["processqueuefile"][a]
+        $hard_disk[number]["process"][a] = b 
+        $hard_disk[number]["processqueuefile"].delete(a)
+        $hard_disk[number]["IOQueue"].shift()
+      end 
+    end 
+  end 
+end 
+
 def ShowInfo
   puts "The Process using CPU IS : #{$cpu}"
   puts "The processes are #{$process_array}"
   puts "The parent child processes are #{$parent_child_process}"
   puts "The processes waiting in ready queue to use CPU are #{$ready_queue}"
-  puts "The processes waiting to wait hard disk #{$processing_waiting_queue}"
+  # puts "The processes waiting to use hard disk #{$processing_waiting_queue}"
   puts "The Hard disk structure is #{$hard_disk}"
   puts "The processes waiting to quit are #{$wait_quit}"
   puts "Thhe Zombie processes are #{$zombie_process}"
