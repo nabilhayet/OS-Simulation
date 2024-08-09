@@ -6,7 +6,6 @@ def RemoveProcess(input)
   $wait_quit[$cpu] = input
   parent_process = nil 
 
-  # IF a process asks 'quit' but it has children in hard disk I/O Delete them also here 
   if($cpu != 0)
     $parent_child_process.each do |parent,child| 
       if(parent == $cpu)
@@ -27,7 +26,7 @@ def RemoveProcess(input)
     end 
   end 
 
-  if($process_has_parent)
+  if($process_has_parent == true)
     if($wait_quit[parent_process] == 'wait')
       $parent_child_process.delete($cpu)
       $parent_child_process[parent_process].delete($cpu)
@@ -38,7 +37,6 @@ def RemoveProcess(input)
       $cpu = 0
     else
       ($zombie_process[parent_process] ||= []) << $cpu
-      # do something - if parent is in hhard disk & child calls quit 
       $cpu = 0
     end 
   else
@@ -62,8 +60,9 @@ def WaitParentProcess(input)
   puts "I am inside Parent Wait Process"
   $wait_quit[$cpu] = input 
 
-  if($parent_child_process[$cpu].length == 0)
+  if(!$parent_child_process[$cpu] || $parent_child_process[$cpu].length == 0)
     puts "No need to wait, the process can continue as it has no child"
+    $wait_quit.delete($cpu)
   else 
     if($zombie_process.has_key?($cpu) && $zombie_process[$cpu].length > 0)
       $wait_quit.delete($cpu)

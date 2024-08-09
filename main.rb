@@ -9,7 +9,6 @@ $cpu = 0
 $process_array = Array.new
 $parent_child_process = Hash.new 
 $ready_queue = Array.new 
-# $processing_waiting_queue = Array.new
 $hard_disk_input = Array.new
 $hard_disk = Hash.new
 $disk_remove_input = Array.new 
@@ -31,7 +30,6 @@ while(input != 'Exit')
     ProcessQueueAdjust()
   elsif(input == 'fork')
     CreateProcess(input)
-    # ParentChildProcess()
   elsif(input == 'S r')
     ProcessStatus()
   elsif(input.match(/d{1}\s\d\s\w*.txt/))

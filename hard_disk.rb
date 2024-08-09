@@ -9,17 +9,15 @@ def HardDiskRead
     $hard_disk[$hard_disk_input[1]]["processqueuefile"] = {}
   end 
 
-  # That means it hhas been read already
-    if(($hard_disk[$hard_disk_input[1]]["process"]).empty?)
+  if(($hard_disk[$hard_disk_input[1]]["process"]).empty?)
       $hard_disk[$hard_disk_input[1]]["process"][$cpu] = $hard_disk_input[2]
-    else
+  else
       $hard_disk[$hard_disk_input[1]]["IOQueue"] << $cpu
       $hard_disk[$hard_disk_input[1]]["processqueuefile"][$cpu] = $hard_disk_input[2]
-    end 
-    $cpu = 0
-    $cpu = $ready_queue[0]
-    $ready_queue.shift()
-
+  end 
+  $cpu = 0
+  $cpu = $ready_queue[0]
+  $ready_queue.shift()
   puts $hard_disk
 end 
  
@@ -30,8 +28,8 @@ def HardDiskStatus
     puts "---------------------"
     hard_disk_info.each do |h,d|
       puts "The #{h} is - #{d}"
-      end 
-      puts "-------------------"
+    end 
+    puts "-------------------"
   end 
 end 
 
@@ -45,7 +43,6 @@ def HardDiskAdjust
       $ready_queue.push(h)
     end 
   end 
-
   puts "The Ready queue is #{$ready_queue}"
 
   $hard_disk[$disk_remove_input[1]]["process"] = {}
@@ -69,12 +66,10 @@ def HardDiskAdjust
   end 
 end 
 
-
 def RemoveProcessFromHardDisk(input)
   puts "I am inside Hard disk Remove Processs"
   $hard_disk.each do |key,value|
     value.each do |name, process|
-      
       if(name == 'IOQueue' && $hard_disk[key][name].any?{ |i|  $parent_child_process[input].include?(i)})
           $hard_disk[key][name].delete_if {|item| $parent_child_process[input].include?(item)}
           $hard_disk[key]["processqueuefile"].delete_if {|item| $parent_child_process[input].include?(item)}
