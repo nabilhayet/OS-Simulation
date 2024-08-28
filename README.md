@@ -1,4 +1,4 @@
-![GitHub Repo stars](https://img.shields.io/github/stars/nabilhayet/Restaurant) ![GitHub forks](https://img.shields.io/github/forks/nabilhayet/Restaurant) ![GitHub followers](https://img.shields.io/github/followers/nabilhayet) ![Bitbucket open issues](https://img.shields.io/bitbucket/issues/nabilhayet/Restaurant)                                          
+![GitHub Repo stars](https://img.shields.io/github/stars/nabilhayet/OS) ![GitHub forks](https://img.shields.io/github/forks/nabilhayet/OS) ![GitHub followers](https://img.shields.io/github/followers/nabilhayet) ![Bitbucket open issues](https://img.shields.io/bitbucket/issues/nabilhayet/OS)                                          
                                         <h1>:jack_o_lantern: OS Simulation :jack_o_lantern: </h1>
                                                       
 This project offers a comprehensive demonstration of how an operating system functions. It simulates the creation of various processes and their management in memory and on the hard disk. While it doesn't execute real processes, the system's design and mechanisms provide valuable insights into prioritizing tasks. Exploring the parent-child relationship among processes illustrates the interconnectedness and dependencies within a system. 
@@ -47,7 +47,6 @@ Table of Contents
 
 ## Tech-Stack
 <p>This cli app makes use of the following:</p>
-
 * ruby '2.6.1'
 * 'bcrypt', '~> 3.1.7'
 
@@ -61,59 +60,74 @@ Table of Contents
         
 ## Challenges
 <ul>
-  <li> Signing up via third party for the user was not working in the beginning with github.So i switched from github to facebook for omni-auth.</li>
-  <li> Making sure to prevent a user from accessing other user's info took some time.</li>
-  <li> Following restful routes pattern for nested routes was not easy.</li>
-  <li> Create a connection between restaurant and food felt like a mountain to climb.</li>
+  <li> Connecting multiple memory management like CPU, Hard Disk, Ready-Queue</li>
+  <li> Creating parent child nested processes</li>
+  <li> Creating System design for each memory management</li>
+  <li> Adding/removing a nested process</li>
 </ul>
 
 ## Future-Implementation
 <ul>
-  <li> Adding nested form to make our app more efficient</li>
-  <li> Redesign database to make tables more standard</li>
-  <li> Insert images while adding new food</li>
+  <li>Creating real time processes to get actual simulation</li>
+  <li>Adding other memory management like RAM, ROM etc</li>
+  <li>Adding multiple machines/systems</li>
 </ul>
 
 ## Code-Snippet 
 
 ```
-def login
- @user = User.new 
+while(input != 'Exit')
+  if(input == 'A')
+    CreateProcess(input)
+  elsif(input == 'Q')
+    ProcessQueueAdjust()
+  elsif(input == 'fork')
+    CreateProcess(input)
+  elsif(input == 'S r')
+    ProcessStatus()
+  end 
 end 
 ```
 ```
-def signin
- @user = User.find_by(email: params[:user][:email])
-  if @user && @user.authenticate(params[:user][:password])
-   session[:user_id] = @user.id
-   redirect_to user_profile_path
-  else 
-   redirect_to user_login_path 
+def CreateProcess(input)
+  @process =  Pid.new($pid)
+  $pid = @process.findObject
+  $process_array.push(@process)
+  $ready_queue.push(@process.pid)
+  if($cpu == 0 && $ready_queue.length > 0)
+    $cpu = $ready_queue[0]
+    $ready_queue.shift()
+  end
+  MemoryUtilization(input)
+end 
+
+```
+```
+
+class Pid
+  attr_accessor :pid
+  def initialize(pid)
+    @pid = pid+=1
+  end 
+
+  def findObject
+    @pid 
   end 
 end 
 ```
 ```
 
-def new 
- if is_logged_in?
-  @user = current_user 
-  @booking = @user.bookings.build
- else 
-  redirect_to user_login_path 
- end 
+def HardDiskStatus
+  puts "The hard disk number being used now : "
+  $hard_disk.each do |hard_disk_num, hard_disk_info|
+    puts hard_disk_num
+    puts "---------------------"
+    hard_disk_info.each do |h,d|
+      puts "The #{h} is - #{d}"
+    end 
+    puts "-------------------"
+  end 
 end 
-```
-```
-
-def create
- @user = current_user 
- @booking = Booking.new(booking_params)
- if @booking.save
-  redirect_to user_booking_path(@user, @booking)
- else
-  render :new
- end
-end
 ```
 
 
