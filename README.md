@@ -2,7 +2,7 @@
                                         <h1>:jack_o_lantern: OS Simulation :jack_o_lantern: </h1>
                                                       
 This project offers a comprehensive demonstration of how an operating system functions. It simulates the creation of various processes and their management in memory and on the hard disk. While it doesn't execute real processes, the system's design and mechanisms provide valuable insights into prioritizing tasks. Exploring the parent-child relationship among processes illustrates the interconnectedness and dependencies within a system. 
-<a href="https://www.youtube.com/watch?v=UWaRqHpO8fU&t=2s">Demo</a>
+<a href="">Demo</a>
 
 Table of Contents
 - [Features](#features)
@@ -23,26 +23,27 @@ Table of Contents
   <li>Create Zombie process</li>
   <li>Display status of any process</li>
   <li>Display status of different memory management</li>
-  <li></li>
 </ul>
 
-## User Signup 
-![signup](https://user-images.githubusercontent.com/33500404/109457096-2ac89100-7a28-11eb-8b43-59f02ad884df.gif)
+## Create Process
 
-## Make Reservation
-![make_res](https://user-images.githubusercontent.com/33500404/109456292-8265fd00-7a26-11eb-96f8-35cc644b9bd6.gif)
 
-## View Reservation 
-![view_reservation](https://user-images.githubusercontent.com/33500404/109456997-f3f27b00-7a27-11eb-8cfe-7816b5dbce14.gif)
+## CPU Status
 
-## Add Cafe
-![add_cafe](https://user-images.githubusercontent.com/33500404/109458180-4fbe0380-7a2a-11eb-84db-92658ebf615a.gif)
 
-## View Cafes
-![view_cafes](https://user-images.githubusercontent.com/33500404/109458557-091cd900-7a2b-11eb-985f-263f27203c86.gif)
+## Ready Queue
 
-## Form Validation
-![Error_validation](https://user-images.githubusercontent.com/33500404/109458252-6ebc9580-7a2a-11eb-927f-fbbdfdc17d31.gif)
+
+## Create Hard Disk
+
+## Parent Child Relation
+
+
+## Delete Process
+
+
+## Create Zombie Process
+## Memory Management Status
 
 
 ## Tech-Stack
@@ -54,8 +55,8 @@ Table of Contents
 <ul>
    <li> Clone this repo to your local machine git clone <this-repo-url></li>
   <li> run brew update and brew install ruby to install required dependencies</li>
-  <li> run gem install pry</li>
-  <li> run ruby main.rb</li>
+  <li> run gem install pry to debug</li>
+  <li> run 'ruby main.rb'</li>
 </ul>
         
 ## Challenges
