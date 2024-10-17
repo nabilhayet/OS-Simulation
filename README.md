@@ -27,24 +27,35 @@ Table of Contents
 
 ## Create Process
 
+![Create_Process](https://github.com/user-attachments/assets/d4ee511e-7bbc-4897-a7d9-4fc03c464010)
 
 ## CPU Status
 
+![Process_Status](https://github.com/user-attachments/assets/96d01062-403d-439a-b48c-177d2b162bf8)
 
 ## Ready Queue
 
+![Ready_Queue](https://github.com/user-attachments/assets/f0425ef2-b5c2-44f9-8b68-ba2b9f39ff03)
 
 ## Create Hard Disk
 
+![Hard_Disk](https://github.com/user-attachments/assets/056ed0d0-7da1-4e17-a7cf-d68dc6bd5366)
+
 ## Parent Child Relation
 
+![Memory](https://github.com/user-attachments/assets/c6695c60-6d05-4e84-94a8-3c654fdf2d18)
 
 ## Delete Process
 
+![Delete_Process](https://github.com/user-attachments/assets/1d400058-773f-482b-b649-43c45f40271f)
 
 ## Create Zombie Process
+
+![Zombie_Process](https://github.com/user-attachments/assets/96f2e30d-ce34-4151-8f48-c7211a00e49b)
+
 ## Memory Management Status
 
+![Memory_management](https://github.com/user-attachments/assets/2d12105f-b17a-4446-9e8c-92fb5071d1fc)
 
 ## Tech-Stack
 <p>This cli app makes use of the following:</p>
